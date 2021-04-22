@@ -108,7 +108,7 @@ public class Songliste {
 	 */
 	public Song loeschenAktuellen() {
 		for (int i = nummerAktueller; i < anzahl - 1; i++)
-			songs[i] = getNaechster();
+			songs[i] = songs[i + 1];
 		anzahl--;
 		songs[anzahl] = null;
 		return songs[nummerAktueller];
@@ -121,6 +121,7 @@ public class Songliste {
 		for (int i = 0; i < anzahl; i++) {
 			songs[i] = null;
 		}
+		nummerAktueller = 0;
 		anzahl = 0;
 	}
 

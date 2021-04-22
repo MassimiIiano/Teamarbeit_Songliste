@@ -3,9 +3,9 @@ import javax.swing.*;
 import java.awt.event.*;
 
 public class SonglisteGUI extends JFrame {
-    Songliste liste = new Songliste(20);
-    Song song = new Song();
-    boolean neuModus;
+    Songliste liste = new Songliste(50);
+    Song aktuellerSong = new Song();
+    // boolean neuModus;
 
     // Labels
     private JLabel lTitel = null;
@@ -29,9 +29,11 @@ public class SonglisteGUI extends JFrame {
     private JButton bAlleLoeschen = null;
 
     public SonglisteGUI() {
+        // Gibt den Pfad and und liest die Songs
         liste.setPfad("/home/massimiliano/git/Temarbeit_Songliste/TeamarbeitSongliste/src/tracklist.csv");
         liste.lesenSongs();
 
+        // Titel & Groese
         setTitle("Songliste");
         setBounds(10, 50, 550, 300);
         setDefaultCloseOperation(JFrame.EXIT_ON_CLOSE);
@@ -40,9 +42,9 @@ public class SonglisteGUI extends JFrame {
 
         // Länge Label
         int width = 100;
-        // Größe Label
+        // Heohe Label
         int height = 25;
-        // xPosition für Labels
+        // x Position für Labels
         int x = 15;
 
         // Labels
@@ -81,7 +83,9 @@ public class SonglisteGUI extends JFrame {
         // yPostion Buttons obere Reihe
         int y = 155;
 
+        // --------------------
         // Buttons obere Reihe
+        // --------------------
         bErster = new JButton();
         bErster.setText("Erster");
         bErster.setBounds(15, y, width, height);
@@ -95,7 +99,7 @@ public class SonglisteGUI extends JFrame {
         bNaechster.setBounds(15 + width * 2, y, width, height);
 
         bLetzter = new JButton();
-        bLetzter.setText("Letzter");
+        bLetzter.setText("Letzter"); 
         bLetzter.setBounds(15 + width * 3, y, width, height);
 
         // Länge Buttons untere Reihe
@@ -103,7 +107,9 @@ public class SonglisteGUI extends JFrame {
         // yPosition Buttons untere Reihe
         y = 195;
 
+        // ---------------------
         // Buttons untere Reihe
+        // ---------------------
         bNeu = new JButton();
         bNeu.setText("Neu");
         bNeu.setBounds(15, y, width, height);
@@ -116,17 +122,21 @@ public class SonglisteGUI extends JFrame {
         bAlleLoeschen.setText("Alle Löschen");
         bAlleLoeschen.setBounds(15 + width * 2, y, width, height);
 
-        // Komponenten zum Fenster fügen
+        // Container erstellen
         Container contentPane = getContentPane();
         contentPane.setLayout(null);
+
+        // Labels
         contentPane.add(lTitel);
         contentPane.add(lInterpret);
         contentPane.add(lAlbum);
         contentPane.add(lJahr);
+        // textfields
         contentPane.add(tTitel);
         contentPane.add(tInterpret);
         contentPane.add(tAlbum);
         contentPane.add(tJahr);
+        // buttons
         contentPane.add(bErster);
         contentPane.add(bVoriger);
         contentPane.add(bNaechster);
@@ -137,24 +147,130 @@ public class SonglisteGUI extends JFrame {
 
         setVisible(true);
 
-        // Ereignis: Knopf drücken
+        aktuellerSong = liste.getErster();
+        setTextfields();
+
+        // --------------------
+        // BUTTONS
+        // --------------------
+        
+        /** 
+         * Setzt den ersten Song in Liste
+         */
         bErster.addActionListener(new ActionListener() {
 
             public void actionPerformed(ActionEvent ev) {
                 try {
-                    song = liste.getErster();
-                    tTitel.setText(song.getTitel());
-                    tInterpret.setText(song.getInterpret());
-                    tAlbum.setText(song.getAlbum());
-                    tJahr.setText(String.valueOf(song.getErscheinungsjahr()));
+                    aktuellerSong = liste.getErster();
+                    setTextfields();
                 } catch (NumberFormatException e) {
-                    tTitel.setText("Fehler");
-                    tInterpret.setText("Fehler");
-                    tAlbum.setText("Fehler");
-                    tJahr.setText("Fehler");
+                    setFeler();
                 }
             }
 
         });
+
+        /**
+         * Setzt den Vor
+         */
+        bVoriger.addActionListener(new ActionListener() {
+
+            public void actionPerformed(ActionEvent ev) {
+                try {
+                    aktuellerSong = liste.getVorherigen();
+                    setTextfields();
+                } catch (NumberFormatException e) {
+                    setFeler();
+                }
+            }
+
+        });
+
+        bNaechster.addActionListener(new ActionListener() {
+
+            public void actionPerformed(ActionEvent ev) {
+                try {
+                    aktuellerSong = liste.getNaechster();
+                    setTextfields();
+                } catch (NumberFormatException e) {
+                    setFeler();
+                }
+            }
+
+        });
+
+        bLetzter.addActionListener(new ActionListener() {
+
+            public void actionPerformed(ActionEvent ev) {
+                try {
+                    aktuellerSong = liste.getLetzter();
+                    setTextfields();
+                } catch (NumberFormatException e) {
+                    setFeler();
+                }
+            }
+
+        });
+
+        bNeu.addActionListener(new ActionListener() {
+
+            public void actionPerformed(ActionEvent ev) {
+                try {
+                    // liste.anfuegenNeuen(aktuellerSong);
+                } catch (NumberFormatException e) {
+                    setFeler();
+                }
+            }
+
+        });
+
+        bLoeschen.addActionListener(new ActionListener() {
+
+            public void actionPerformed(ActionEvent ev) {
+                try {
+                    aktuellerSong = liste.loeschenAktuellen();
+                    setTextfields();
+                } catch (NumberFormatException e) {
+                    setFeler();
+                }
+            }
+
+        });
+
+        bAlleLoeschen.addActionListener(new ActionListener() {
+            public void actionPerformed(ActionEvent ev) {
+                try {
+                    liste.loeschenAlle();
+                    aktuellerSong = liste.getAktueller();
+                    setTextfields();
+                } catch (NumberFormatException e) {
+                    setFeler();
+                }
+            }
+        });
+
+    }
+
+    public void setTextfields() {
+        if (aktuellerSong != null) {
+            tTitel.setText(aktuellerSong.getTitel());
+            tInterpret.setText(aktuellerSong.getInterpret());
+            tAlbum.setText(aktuellerSong.getAlbum());
+            tJahr.setText(String.valueOf(aktuellerSong.getErscheinungsjahr()));
+        } else {
+            tTitel.setText("");
+            tInterpret.setText("");
+            tAlbum.setText("");
+            tJahr.setText("");
+        }
+    }
+
+    public void setFeler() {
+        if (aktuellerSong != null) {
+            tTitel.setText("Fehler");
+            tInterpret.setText("Fehler");
+            tAlbum.setText("Fehler");
+            tJahr.setText("Fehler");
+        }
     }
 }
