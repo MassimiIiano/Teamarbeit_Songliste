@@ -3,7 +3,8 @@ import javax.swing.*;
 import java.awt.event.*;
 
 public class SonglisteGUI extends JFrame {
-    Songliste liste = new Songliste(50);
+    final int LIST_LEN = 1000;
+    Songliste liste = new Songliste(LIST_LEN);
     Song aktuellerSong = new Song();
     // boolean neuModus;
 
@@ -99,7 +100,7 @@ public class SonglisteGUI extends JFrame {
         bNaechster.setBounds(15 + width * 2, y, width, height);
 
         bLetzter = new JButton();
-        bLetzter.setText("Letzter"); 
+        bLetzter.setText("Letzter");
         bLetzter.setBounds(15 + width * 3, y, width, height);
 
         // Länge Buttons untere Reihe
@@ -153,9 +154,9 @@ public class SonglisteGUI extends JFrame {
         // --------------------
         // BUTTONS
         // --------------------
-        
-        /** 
-         * Setzt den ersten Song in Liste
+
+        /**
+         * Setzt den ersten Song von der Liste
          */
         bErster.addActionListener(new ActionListener() {
 
@@ -171,7 +172,7 @@ public class SonglisteGUI extends JFrame {
         });
 
         /**
-         * Setzt den Vor
+         * Setzt den Vorhergehenden Song von der Liste
          */
         bVoriger.addActionListener(new ActionListener() {
 
@@ -186,6 +187,9 @@ public class SonglisteGUI extends JFrame {
 
         });
 
+        /**
+         * Setzt den naechsten Song von der Liste
+         */
         bNaechster.addActionListener(new ActionListener() {
 
             public void actionPerformed(ActionEvent ev) {
@@ -199,6 +203,9 @@ public class SonglisteGUI extends JFrame {
 
         });
 
+        /**
+         * Setzt den letzten Song von der Liste
+         */
         bLetzter.addActionListener(new ActionListener() {
 
             public void actionPerformed(ActionEvent ev) {
@@ -212,11 +219,30 @@ public class SonglisteGUI extends JFrame {
 
         });
 
+        /**
+         * Erstesst einen neuen Song am ende der Liste
+         */
         bNeu.addActionListener(new ActionListener() {
 
             public void actionPerformed(ActionEvent ev) {
                 try {
-                    // liste.anfuegenNeuen(aktuellerSong);
+                    // Werte einlesen
+                    Song tmp = new Song();
+                    tmp.setTitel(tTitel.getText());
+                    tmp.setInterpret(tInterpret.getText());
+                    tmp.setAlbum(tAlbum.getText());
+                    try {
+                        tmp.setErscheinungsjahr(Integer.parseInt(tJahr.getText()));
+                    } catch (NumberFormatException e) {
+                        tmp.setErscheinungsjahr(0);
+                    }
+
+                    // falls es anders ist Song anlegen
+                    if (!tmp.equals(liste.getAktueller())) {
+                        liste.anfuegenNeuen(tmp);
+                        aktuellerSong = liste.getAktueller();
+                        setTextfields();
+                    }
                 } catch (NumberFormatException e) {
                     setFeler();
                 }
@@ -224,6 +250,9 @@ public class SonglisteGUI extends JFrame {
 
         });
 
+        /**
+         * Loescht den aktuellen song von der Liste
+         */
         bLoeschen.addActionListener(new ActionListener() {
 
             public void actionPerformed(ActionEvent ev) {
@@ -234,9 +263,11 @@ public class SonglisteGUI extends JFrame {
                     setFeler();
                 }
             }
-
         });
 
+        /**
+         * Loescht alle elemente von der liste
+         */
         bAlleLoeschen.addActionListener(new ActionListener() {
             public void actionPerformed(ActionEvent ev) {
                 try {
@@ -251,6 +282,9 @@ public class SonglisteGUI extends JFrame {
 
     }
 
+    /**
+     * Giebt den Song auf die Textfelder aus
+     */
     public void setTextfields() {
         if (aktuellerSong != null) {
             tTitel.setText(aktuellerSong.getTitel());
@@ -265,6 +299,9 @@ public class SonglisteGUI extends JFrame {
         }
     }
 
+    /**
+     * Setzt die Textfelder auf "Fehler"
+     */
     public void setFeler() {
         if (aktuellerSong != null) {
             tTitel.setText("Fehler");

@@ -32,7 +32,7 @@ public class Songliste {
 	 */
 	public Song getNaechster() {
 		Song ret = this.songs[this.nummerAktueller];
-		if (nummerAktueller + 1 < this.songs.length) {
+		if (this.nummerAktueller < this.anzahl - 1) {
 			this.nummerAktueller++;
 			ret = this.songs[this.nummerAktueller];
 		}
@@ -66,8 +66,9 @@ public class Songliste {
 	 * @return the last song in the list
 	 */
 	public Song getLetzter() {
-		this.nummerAktueller = anzahl - 1;
-		return this.songs[this.anzahl - 1];
+		if (anzahl > 0)
+			nummerAktueller = anzahl - 1;
+		return this.songs[nummerAktueller];
 	}
 
 	/**
@@ -109,7 +110,8 @@ public class Songliste {
 	public Song loeschenAktuellen() {
 		for (int i = nummerAktueller; i < anzahl - 1; i++)
 			songs[i] = songs[i + 1];
-		anzahl--;
+		if (anzahl > 0)
+			anzahl--;
 		songs[anzahl] = null;
 		return songs[nummerAktueller];
 	}
@@ -247,9 +249,9 @@ public class Songliste {
 		try {
 			BufferedReader reader = new BufferedReader(new FileReader(quelle));
 			int i = 0;
-			String zeile = reader.readLine();
+			// String zeile = reader.readLine();
 			while (true) {
-				zeile = reader.readLine();
+				String zeile = reader.readLine();
 				if (zeile == null)
 					// Dateiende erkannt
 					break;
