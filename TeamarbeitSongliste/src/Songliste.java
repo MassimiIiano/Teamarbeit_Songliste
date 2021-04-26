@@ -108,12 +108,18 @@ public class Songliste {
 	 * @return the next song
 	 */
 	public Song loeschenAktuellen() {
+		Song ret = new Song();
 		for (int i = nummerAktueller; i < anzahl - 1; i++)
 			songs[i] = songs[i + 1];
 		if (anzahl > 0)
 			anzahl--;
 		songs[anzahl] = null;
-		return songs[nummerAktueller];
+		if (nummerAktueller >= anzahl) {
+			ret = songs[anzahl - 1];
+		} else {
+			ret = songs[nummerAktueller];
+		}
+		return ret;
 	}
 
 	/**
