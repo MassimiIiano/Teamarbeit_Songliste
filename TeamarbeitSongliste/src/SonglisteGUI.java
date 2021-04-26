@@ -3,8 +3,7 @@ import javax.swing.*;
 import java.awt.event.*;
 
 public class SonglisteGUI extends JFrame {
-    final int LIST_LEN = 1000;
-    Songliste liste = new Songliste(LIST_LEN);
+    Songliste liste = new Songliste();
     Song aktuellerSong = new Song();
     // boolean neuModus;
 
@@ -31,8 +30,10 @@ public class SonglisteGUI extends JFrame {
 
     public SonglisteGUI() {
         // Gibt den Pfad and und liest die Songs
-        liste.setPfad("/home/massimiliano/git/Temarbeit_Songliste/TeamarbeitSongliste/src/tracklist.csv");
+        liste.setPfad("C:\\Users\\massi\\Downloads\\Info\\Work\\Tmp\\src\\tracklist.csv");
         liste.lesenSongs();
+        liste.sort();
+        liste.schreibenSongs();
 
         // Titel & Groese
         setTitle("Songliste");
@@ -234,13 +235,14 @@ public class SonglisteGUI extends JFrame {
                     try {
                         tmp.setErscheinungsjahr(Integer.parseInt(tJahr.getText()));
                     } catch (NumberFormatException e) {
-                        tmp.setErscheinungsjahr(0);
+                        tmp.setErscheinungsjahr(-1);
                     }
 
                     // falls es anders ist Song anlegen
                     if (!tmp.equals(liste.getAktueller())) {
                         liste.anfuegenNeuen(tmp);
                         aktuellerSong = liste.getAktueller();
+                        liste.schreibenSongs();
                         setTextfields();
                     }
                 } catch (NumberFormatException e) {
@@ -258,6 +260,7 @@ public class SonglisteGUI extends JFrame {
             public void actionPerformed(ActionEvent ev) {
                 try {
                     aktuellerSong = liste.loeschenAktuellen();
+                    liste.schreibenSongs();
                     setTextfields();
                 } catch (NumberFormatException e) {
                     setFeler();
@@ -273,6 +276,7 @@ public class SonglisteGUI extends JFrame {
                 try {
                     liste.loeschenAlle();
                     aktuellerSong = liste.getAktueller();
+                    liste.schreibenSongs();
                     setTextfields();
                 } catch (NumberFormatException e) {
                     setFeler();
