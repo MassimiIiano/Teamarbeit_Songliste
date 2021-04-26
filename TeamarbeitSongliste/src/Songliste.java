@@ -4,6 +4,7 @@ import java.io.*;
 public class Songliste {
 
 	private Song[] songs; // liste von Songs
+	private static final int DEFAULT_MAXANZAHL = 1000;
 	private int nummerAktueller; // nummer vom Aktuellen song
 	private int anzahl; // anzahl der Songs
 	private String pfad; // pfad der csv-Datei
@@ -16,6 +17,30 @@ public class Songliste {
 	public Songliste(int max_anzahl) {
 		this.songs = new Song[max_anzahl];
 		this.nummerAktueller = 0;
+	}
+
+	/**
+	 * Inizialisiert das Objekt Songliste mit defoult groese
+	 * 
+	 */
+	public Songliste() {
+		this(DEFAULT_MAXANZAHL);
+	}
+
+	/**
+	 * 
+	 * @return the maximum ammount of Songs in the objekt
+	 */
+	public int getMaxanzahl() {
+		return songs.length;
+	}
+
+	/**
+	 * 
+	 * @return the number of songs in the objekt
+	 */
+	public int getAnzahl() {
+		return anzahl;
 	}
 
 	/**
@@ -79,8 +104,9 @@ public class Songliste {
 	public void anfuegenNeuen(Song s) {
 		if (this.anzahl < this.songs.length) {
 			this.songs[anzahl] = s;
-			this.nummerAktueller = this.anzahl;
 			this.anzahl++;
+			sort();
+			aendernAktuellen(s);
 		}
 	}
 
@@ -92,10 +118,10 @@ public class Songliste {
 	public Song aendernAktuellen(Song s) {
 		Song ret = songs[nummerAktueller];
 		int i = 0;
-		while (songs[i].compareTo(s) == 0 || i == anzahl - 1) {
+		while (songs[i].compareTo(s) != 0 && i < anzahl) {
 			i++;
 		}
-		if (i != anzahl - 1) {
+		if (i < anzahl) {
 			nummerAktueller = i;
 			ret = songs[nummerAktueller];
 		}
@@ -114,11 +140,11 @@ public class Songliste {
 		if (anzahl > 0)
 			anzahl--;
 		songs[anzahl] = null;
-		if (nummerAktueller >= anzahl) {
+		if (nummerAktueller >= anzahl && anzahl > 0)
 			ret = songs[anzahl - 1];
-		} else {
+		else
 			ret = songs[nummerAktueller];
-		}
+
 		return ret;
 	}
 
@@ -180,7 +206,10 @@ public class Songliste {
 			// new FileWriter(ziel, false).close(); // delite conntent of ziel
 			BufferedWriter writer = new BufferedWriter(new FileWriter(ziel));
 			for (Song song : s) {
-				writer.write(song.toString() + "\n");
+				if (song != null)
+					writer.write(song.toString() + "\n");
+				// else
+				// writer.write("");
 			}
 			writer.close();
 		} catch (IOException e) {
@@ -205,6 +234,16 @@ public class Songliste {
 		}
 
 		return s;
+	}
+
+	public void sort() {
+		for (int i = 1; i < anzahl; i++) {
+			while (songs[i].compareTo(songs[i - 1]) < 0) {
+				songs = swapSongs(songs, i);
+				if (i > 1)
+					i--;
+			}
+		}
 	}
 
 	/**
